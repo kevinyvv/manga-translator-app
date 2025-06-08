@@ -24,7 +24,8 @@ dependencies = [
     "google-genai (>=1.19.0,<2.0.0)",
     "jikanpy (>=4.3.2,<5.0.0)",
     "colorlog (>=6.9.0,<7.0.0)",
-    "pytesseract (>=0.3.13,<0.4.0)"
+    "pytesseract (>=0.3.13,<0.4.0)",
+    "asyncio (>=3.4.3,<4.0.0)"
 ]
 
 [tool.poetry]

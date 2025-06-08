@@ -62,7 +62,7 @@ class MangaTextExtractor:
         logger.remove() # loguru logger, not to be confused with self.logger - from logging module
         self.mocr = MangaOcr()
  
-    def detect_bubbles(self, image_path, conf_threshold=0.75):
+    def detect_bubbles(self, image: np.ndarray, conf_threshold=0.75):
         """
         Detect speech bubbles in the image
         
@@ -75,14 +75,13 @@ class MangaTextExtractor:
             numpy.ndarray: The original image
         """
         # Read the image
-        image = cv2.imread(image_path)
         if image is None:
-            raise ValueError(f"Could not read image from {image_path}")
+            raise ValueError(f"Could not read image")
         
         # If bubble detection model is available, use it
         if self.bubble_detection_model:
 
-            results = self.bubble_detection_model(image_path, conf=conf_threshold)[0]
+            results = self.bubble_detection_model(image, conf=conf_threshold)[0]
             
             # Process detections
             bubbles = []
