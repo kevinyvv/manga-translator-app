@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { UploadSection } from "@/components/upload-section"
 import { LanguageSelector } from "@/components/language-selector"
@@ -21,35 +21,74 @@ export default function Home() {
     setResults([])
   }
 
+
   const handleTranslate = async () => {
     if (uploadedFiles.length === 0) return
 
     setIsProcessing(true)
     setProcessingProgress(0)
 
-    // Simulate processing
-    const interval = setInterval(() => {
-      setProcessingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setIsProcessing(false)
-          // Mock results
-          setResults(
-            uploadedFiles.map((file, index) => ({
-              id: index,
-              originalFile: file,
-              originalUrl: URL.createObjectURL(file),
-              translatedUrl: URL.createObjectURL(file), // In real app, this would be the translated version
-              detectedText: ["こんにちは", "元気ですか？", "ありがとう"],
-              translatedText: ["Hello", "How are you?", "Thank you"],
-            })),
-          )
-          return 100
-        }
-        return prev + 10
+    try {
+      const formData = new FormData()
+      uploadedFiles.forEach((file) => {
+        formData.append("image", file)
       })
-    }, 500)
+
+      const response = await fetch("http://127.0.0.1:5000/process", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Convert base64 image to data URL for <img> tag
+        const imageUrl = `data:image/png;base64,${data.image}`
+
+        setProcessingProgress(100) // Set progress to 100% after processing
+        setIsProcessing(false)
+
+        const detectedText = data.translated_data.map((item: any) => item.text) || ["No text detected"]
+        const translatedText = data.translated_data.map((item: any) => item.translated_text) || ["No text translated"]
+
+        setResults([
+          {
+            id: 0,
+            originalFile: uploadedFiles[0],
+            originalUrl: URL.createObjectURL(uploadedFiles[0]),
+            translatedUrl: imageUrl,
+            detectedText: detectedText,      // Should be an array or string
+            translatedText: translatedText,   // Should be an array or string
+          },
+        ])
+      } else {
+        setIsProcessing(false)
+        setProcessingProgress(0)
+      }
+    } catch (error) {
+      console.error("Error translating images:", error)
+      setIsProcessing(false)
+      setProcessingProgress(0)
+    }
   }
+
+
+
+  useEffect(() => {
+    // test api endpoint at 127.001:5000/api/hello
+    const testApiEndpoint = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/hello")
+        if (!response.ok) {
+          throw new Error("Network response was not ok")
+        }
+        const data = await response.json()
+        console.log("API Test Response:", data)
+      } catch (error) {
+        console.error("Error testing API endpoint:", error)
+      }
+    }
+    testApiEndpoint()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

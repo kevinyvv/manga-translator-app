@@ -1,8 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
+from flasgger import Swagger
 
 app = Flask(__name__)
 CORS(app)
+# swagger is at 127.0.0.1/apidocs/
+Swagger(app)
 
 # Register blueprints
 from routes.hello import hello_bp

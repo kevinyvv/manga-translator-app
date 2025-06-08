@@ -26,7 +26,7 @@ async def process_image(
     target_lang="en",
     conf_threshold=0.25,
     debug=False,
-    font_path=None
+    font_path="fonts/Anime.otf"
 ) -> dict:
     """
     Process a complete manga image using modular components:
@@ -107,40 +107,3 @@ async def process_image(
         "image_bytes": img_bytes,
         "translated_data": translated_data
     }
-
-
-def create_debug_visualization(original_image, text_mask, inpainted_image, 
-                             result_image, image_path, output_path):
-    """Create and save debug visualization"""
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    
-    # Original image
-    axes[0, 0].imshow(cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB))
-    axes[0, 0].set_title("Original Image")
-    axes[0, 0].axis("off")
-    
-    # Text mask
-    axes[0, 1].imshow(text_mask, cmap='gray')
-    axes[0, 1].set_title("Text Mask")
-    axes[0, 1].axis("off")
-    
-    # Inpainted image
-    axes[1, 0].imshow(cv2.cvtColor(inpainted_image, cv2.COLOR_BGR2RGB))
-    axes[1, 0].set_title("Inpainted Image (Text Removed)")
-    axes[1, 0].axis("off")
-    
-    # Final result
-    axes[1, 1].imshow(cv2.cvtColor(result_image, cv2.COLOR_BGR2RGB))
-    axes[1, 1].set_title("Final Translated Image")
-    axes[1, 1].axis("off")
-    
-    plt.tight_layout()
-    
-    # Save debug visualization
-    debug_dir = os.path.dirname(os.path.abspath(output_path))
-    base_name = os.path.basename(image_path)
-    name_without_ext = os.path.splitext(base_name)[0]
-    debug_path = os.path.join(debug_dir, f"{name_without_ext}_debug.jpg")
-    plt.savefig(debug_path)
-    logger.debug(f"Debug visualization saved to {debug_path}")
-    plt.close()
