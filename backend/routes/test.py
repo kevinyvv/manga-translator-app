@@ -38,13 +38,17 @@ def process_endpoint():
               type: string
               format: binary
     """
-    file = request.files['image']
-    npimg = np.frombuffer(file.read(), np.uint8)
-    image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-    result = asyncio.run(process_image(image))
-    imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
-    return jsonify({
-        "image": imageb64,
-        "text_extracted": result["text_extracted"],
-        "translated_data": result["translated_data"]
-    })
+    files = request.files.getlist('image')
+    results = []
+    for file in files:
+        npimg = np.frombuffer(file.read(), np.uint8)
+        image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+        result = asyncio.run(process_image(image))
+        imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
+        img_res = {
+            "image": imageb64,
+            "text_extracted": result["text_extracted"],
+            "translated_data": result["translated_data"]
+        }
+        results.append(img_res)
+    return jsonify(results)
