@@ -44,22 +44,19 @@ export default function Home() {
         // Convert base64 image to data URL for <img> tag
         const imageUrl = `data:image/png;base64,${data.image}`
 
-        setProcessingProgress(100) // Set progress to 100% after processing
-        setIsProcessing(false)
+         setProcessingProgress(100)
+          setIsProcessing(false)
 
-        const detectedText = data.translated_data.map((item: any) => item.text) || ["No text detected"]
-        const translatedText = data.translated_data.map((item: any) => item.translated_text) || ["No text translated"]
+          const resultsArray = data.map((item: any, idx: number) => ({
+            id: idx,
+            originalFile: uploadedFiles[idx],
+            originalUrl: URL.createObjectURL(uploadedFiles[idx]),
+            translatedUrl: `data:image/png;base64,${item.image}`,
+            detectedText: item.translated_data?.map((t: any) => t.text) || ["No text detected"],
+            translatedText: item.translated_data?.map((t: any) => t.translated_text) || ["No text translated"],
+          }))
 
-        setResults([
-          {
-            id: 0,
-            originalFile: uploadedFiles[0],
-            originalUrl: URL.createObjectURL(uploadedFiles[0]),
-            translatedUrl: imageUrl,
-            detectedText: detectedText,      // Should be an array or string
-            translatedText: translatedText,   // Should be an array or string
-          },
-        ])
+          setResults(resultsArray)
       } else {
         setIsProcessing(false)
         setProcessingProgress(0)
