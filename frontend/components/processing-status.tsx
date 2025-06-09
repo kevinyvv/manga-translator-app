@@ -18,7 +18,7 @@ export function ProcessingStatus({ progress }: ProcessingStatusProps) {
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+          <Loader2 className="h-5 w-5 animate-spin text-[#da0443]" />
           <h3 className="text-lg font-semibold text-gray-900">Processing Your Manga</h3>
         </div>
 

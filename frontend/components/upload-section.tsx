@@ -37,13 +37,12 @@ export function UploadSection({ onFilesUpload, uploadedFiles }: UploadSectionPro
       <CardContent className="p-6">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-            isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+          className={`shadow-lg border-2 border-dashed bg-white/30 border-[#da0443]/50 rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-[#da0443]"
           }`}
         >
           <input {...getInputProps()} />
-          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Manga Pages</h3>
+          <Upload className="h-12 w-12 text-[#da0443] mx-auto mb-4" />
           <p className="text-gray-600 mb-4">Drag and drop your manga images here, or click to browse</p>
           <p className="text-sm text-gray-500">Supports PNG, JPG, JPEG, WebP formats</p>
         </div>
