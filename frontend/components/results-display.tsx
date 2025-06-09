@@ -24,7 +24,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
   }
 
   return (
-    <Card>
+    <Card className="bg-white/60">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2">
@@ -40,7 +40,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
       <CardContent>
         <div className="space-y-6">
           {results.map((result) => (
-            <div key={result.id} className="border rounded-lg p-4">
+            <div key={result.id} className="rounded-lg p-4">
               <div className="flex items-center justify-between mb-4">
                 <h4 className="font-semibold text-gray-900">{result.originalFile.name}</h4>
                 <div className="flex space-x-2">
@@ -109,7 +109,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                   <h5 className="font-medium text-gray-700 mb-2">Detected Text</h5>
                   <div className="space-y-1">
                     {result.detectedText.map((text, index) => (
-                      <div key={index} className="text-sm bg-gray-100 p-2 rounded">
+                      <div key={index} className="text-sm bg-gray-100/65 p-2 rounded">
                         {text}
                       </div>
                     ))}
@@ -119,7 +119,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                   <h5 className="font-medium text-gray-700 mb-2">Translated Text</h5>
                   <div className="space-y-1">
                     {result.translatedText.map((text, index) => (
-                      <div key={index} className="text-sm bg-blue-50 p-2 rounded">
+                      <div key={index} className="text-sm bg-gray-100/65 p-2 rounded">
                         {text}
                       </div>
                     ))}

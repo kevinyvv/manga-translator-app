@@ -36,8 +36,6 @@ export function LanguageSelector({
   return (
     <Card>
       <CardContent className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Translation Settings</h3>
-
         <div className="flex items-center space-x-4 mb-6">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
@@ -59,7 +57,7 @@ export function LanguageSelector({
           </div>
 
           <div className="flex items-center justify-center pt-6">
-            <ArrowRight className="h-5 w-5 text-gray-400" />
+            <ArrowRight className="h-5 w-5 text-[#da0443]" />
           </div>
 
           <div className="flex-1">
@@ -82,7 +80,7 @@ export function LanguageSelector({
           </div>
         </div>
 
-        <Button onClick={onTranslate} className="w-full" size="lg" disabled={isProcessing}>
+        <Button onClick={onTranslate} className="w-full bg-gradient-to-r from-[#da0443] via-[#eb4274] to-[#ff75d8]" size="lg" disabled={isProcessing}>
           <Play className="h-4 w-4 mr-2" />
           {isProcessing ? "Processing..." : "Start Translation"}
         </Button>

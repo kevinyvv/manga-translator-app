@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Header } from "@/components/header"
 import { UploadSection } from "@/components/upload-section"
 import { LanguageSelector } from "@/components/language-selector"
 import { ProcessingStatus } from "@/components/processing-status"
 import { ResultsDisplay } from "@/components/results-display"
-import { FeatureCards } from "@/components/feature-cards"
+import { Background } from "@/components/background"
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -15,6 +15,8 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [processingProgress, setProcessingProgress] = useState(0)
   const [results, setResults] = useState<any[]>([])
+
+  const settingsRef = useRef<HTMLDivElement>(null)
 
   const handleFilesUpload = (files: File[]) => {
     setUploadedFiles(files)
@@ -90,22 +92,28 @@ export default function Home() {
     testApiEndpoint()
   }, [])
 
+  // Scroll to translation settings when files are uploaded
+  useEffect(() => {
+    if (uploadedFiles.length > 0 && settingsRef.current) {
+      settingsRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [uploadedFiles])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen relative">
+      <Background />
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-64 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">Manga Auto Translator</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Instantly translate manga pages with AI-powered text detection and translation. Preserve the original layout
-            while making content accessible in any language.
-          </p>
+        <div className="text-center">
+          <h1 className="text-3xl font-medium bg-gradient-to-r from-[#da0443] via-[#e8356a] to-[#ff75d8] inline-block text-transparent bg-clip-text text-gray-900 py-2">
+            Start translating now!
+          </h1>
         </div>
 
-        {/* Main Interface */}
-        <div className="max-w-4xl mx-auto space-y-8">
+        {/* Main Interface */}  
+        <div ref={settingsRef} className="max-w-2xl mx-auto space-y-8">
           {/* Upload Section */}
           <UploadSection onFilesUpload={handleFilesUpload} uploadedFiles={uploadedFiles} />
 
@@ -127,9 +135,6 @@ export default function Home() {
           {/* Results Display */}
           {results.length > 0 && !isProcessing && <ResultsDisplay results={results} />}
         </div>
-
-        {/* Features Section */}
-        {uploadedFiles.length === 0 && <FeatureCards />}
       </main>
     </div>
   )
