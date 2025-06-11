@@ -31,6 +31,21 @@ class MangaTranslator:
         self.translator_method = translator_method
         self.translator = Translator()
 
+        with open("utils/languages.json", "r") as f:
+            self.languages = json.load(f)
+
+    def get_language_full(self, lang_code: str) -> str:
+        """
+        Get the full language name from the language code
+        
+        Args:
+            lang_code (str): Language code (e.g., 'ja', 'en')
+            
+        Returns:
+            str: Full language name or None if not found
+        """
+        return self.languages.get(lang_code, lang_code)
+
     def translate(self, text_data, source_lang:str="ja", target_lang:str="en", manga_title:str=None) -> str:
         """
         Translate text using the configured translator method
@@ -90,13 +105,14 @@ class MangaTranslator:
 
             prompt = f"""
             You are a translator, translating manga text from one language to another.
-            Translate the following text from japanese to english:
+            Translate the following text from {self.get_language_full(source_lang)} to {self.get_language_full(target_lang)}:
             {original_text}
             Please return only the translated text without any additional comments or formatting.
             {"Here is some context about the manga:" + 
              manga_info if manga_info else ""}
             """
-            # print(prompt)
+            
+            print(prompt)
             
             # translate using GenAI
             try:

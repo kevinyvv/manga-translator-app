@@ -7,6 +7,7 @@ import { LanguageSelector } from "@/components/language-selector"
 import { ProcessingStatus } from "@/components/processing-status"
 import { ResultsDisplay } from "@/components/results-display"
 import { Background } from "@/components/background"
+import Image from "next/image"
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -104,6 +105,13 @@ export default function Home() {
       <main className="container mx-auto px-4 py-64 relative z-10">
         {/* Hero Section */}
         <div className="text-center">
+           <Image
+              src="/TranslationLogo.png"
+              width="400"
+              height="400"
+              alt="Logo"
+              className="mx-auto"
+          />  
           <h1 className="text-3xl font-medium bg-gradient-to-r from-[#da0443] via-[#e8356a] to-[#ff75d8] inline-block text-transparent bg-clip-text text-gray-900 py-2">
             Start translating now!
           </h1>

@@ -14,11 +14,18 @@ interface LanguageSelectorProps {
   isProcessing: boolean
 }
 
-const languages = [
+
+const source_languages = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
   { code: "en", name: "English", flag: "🇺🇸" },
-  { code: "ko", name: "Korean", flag: "🇰🇷" },
-  { code: "zh", name: "Chinese", flag: "🇨🇳" },
+]
+
+
+const target_languages = [
+  // { code: "ja", name: "Japanese", flag: "🇯🇵" },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  // { code: "ko", name: "Korean", flag: "🇰🇷" },
+  // { code: "zh", name: "Chinese", flag: "🇨🇳" },
   { code: "es", name: "Spanish", flag: "🇪🇸" },
   { code: "fr", name: "French", flag: "🇫🇷" },
   { code: "de", name: "German", flag: "🇩🇪" },
@@ -44,7 +51,7 @@ export function LanguageSelector({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {languages.map((lang) => (
+                {source_languages.map((lang) => (
                   <SelectItem key={lang.code} value={lang.code}>
                     <span className="flex items-center space-x-2">
                       <span>{lang.flag}</span>
@@ -67,7 +74,7 @@ export function LanguageSelector({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {languages.map((lang) => (
+                {target_languages.map((lang) => (
                   <SelectItem key={lang.code} value={lang.code}>
                     <span className="flex items-center space-x-2">
                       <span>{lang.flag}</span>
