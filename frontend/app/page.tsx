@@ -130,7 +130,7 @@ export default function Home() {
           {isProcessing && <ProcessingStatus progress={processingProgress} />}
 
           {/* Results Display */}
-          {results.length > 0 && !isProcessing && <ResultsDisplay results={results} />}
+          {results.length > 0 && !isProcessing && <ResultsDisplay results={results} handleTranslate={handleTranslate}/>}
         </div>
       </main>
     </div>
