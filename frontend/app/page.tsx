@@ -36,8 +36,9 @@ export default function Home() {
       uploadedFiles.forEach((file) => {
         formData.append("image", file)
       })
-
-      const response = await fetch("http://127.0.0.1:5000/process", {
+      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const response = await fetch(`${apiUrl}/process`, {
         method: "POST",
         body: formData,
       })
@@ -73,22 +74,22 @@ export default function Home() {
 
 
 
-  useEffect(() => {
-    // test api endpoint at 127.001:5000/api/hello
-    const testApiEndpoint = async () => {
-      try {
-        const response = await fetch("http://127.0.0.1:5000/api/hello")
-        if (!response.ok) {
-          throw new Error("Network response was not ok")
-        }
-        const data = await response.json()
-        console.log("API Test Response:", data)
-      } catch (error) {
-        console.error("Error testing API endpoint:", error)
-      }
-    }
-    testApiEndpoint()
-  }, [])
+  // useEffect(() => {
+  //   // test api endpoint at 127.001:5000/api/hello
+  //   const testApiEndpoint = async () => {
+  //     try {
+  //       const response = await fetch("http://127.0.0.1:5000/api/hello")
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok")
+  //       }
+  //       const data = await response.json()
+  //       console.log("API Test Response:", data)
+  //     } catch (error) {
+  //       console.error("Error testing API endpoint:", error)
+  //     }
+  //   }
+  //   testApiEndpoint()
+  // }, [])
 
   // Scroll to translation settings when files are uploaded
   useEffect(() => {

@@ -18,7 +18,9 @@ export function Header() {
 
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">
-              <Github className="h-5 w-5" />
+              <a href="https://github.com/kevinyvv/manga-translator-app" target="_blank">
+                <Github className="h-5 w-5" />
+              </a>
             </Button>
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />

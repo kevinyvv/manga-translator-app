@@ -112,7 +112,7 @@ class MangaTranslator:
              manga_info if manga_info else ""}
             """
             
-            print(prompt)
+            # print(prompt)
             
             # translate using GenAI
             try:

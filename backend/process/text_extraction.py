@@ -24,6 +24,14 @@ from googletrans import Translator
 from manga_ocr import MangaOcr
 from ultralytics import YOLO
 
+from google import genai
+from google.genai import types
+
+from io import BytesIO
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+
 class MangaTextExtractor:
     def __init__(self, translator_method="google",  mask_dilation_radius=3):
         """
@@ -61,7 +69,51 @@ class MangaTextExtractor:
         logging.getLogger("transformers").setLevel(logging.ERROR)
         logger.remove() # loguru logger, not to be confused with self.logger - from logging module
         self.mocr = MangaOcr()
- 
+        with open("utils/languages.json", "r") as f:
+            self.languages = json.load(f)
+
+        
+    def google_ocr(self, image: Image, source_lang: str = "ja") -> str:
+        """
+        Perform OCR using Google Translate API
+        
+        Args:
+            image (PIL.Image): Image to perform OCR on
+            source_lang (str): Source language code
+            
+        Returns:
+            str: Extracted text
+        """
+        prompt = f"""
+            Please extract the {self.languages.get(source_lang, source_lang)} text from the following image.
+            Return only the extracted text without any additional comments or formatting.
+            If there is no text, return an empty string.
+            """
+            # print(prompt)
+            
+            # translate using GenAI
+        image_bytes = BytesIO()
+        image.save(image_bytes, format="PNG")
+        image_bytes.seek(0)
+        
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[
+                    types.Part.from_bytes(
+                        data=image_bytes.getvalue(),
+                        mime_type="image/png"
+                    ),
+                    prompt,
+                ]
+            )
+            extracted_text = response.text
+        except Exception as e:
+            self.logger.error(f"Translation error: {e}")
+            extracted_text = ""
+        
+        return extracted_text
+
     def detect_bubbles(self, image: np.ndarray, conf_threshold=0.75):
         """
         Detect speech bubbles in the image
@@ -166,7 +218,7 @@ class MangaTextExtractor:
 
         return binary_mask
     
-    def extract_text(self, image: np.ndarray, bubbles: list) -> list:
+    def extract_text(self, image: np.ndarray, bubbles: list, source_lang: str = "ja" ) -> list:
         """
         Extract text from speech bubbles using OCR
         
@@ -208,7 +260,11 @@ class MangaTextExtractor:
             # Perform OCR using MangaOcr
             try:
                 img = Image.fromarray(processed_roi)
-                text = self.mocr(img)
+                if source_lang == "ja":
+                    text = self.mocr(img)
+                else:
+                    # for non-japanese languages use a different ocr model (gemini right now)
+                    text = self.google_ocr(img, source_lang)
                 # Clean up the text (remove extra whitespace and newlines)
                 text = ' '.join(text.strip().split())
             except Exception as e:

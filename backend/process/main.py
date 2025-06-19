@@ -66,7 +66,7 @@ async def process_image(image_path, output_path, source_lang="ja", target_lang="
     text_mask = text_extractor.segment_text(original_image)
 
     # Step 3: Extract text from bubbles
-    text_data = text_extractor.extract_text(original_image, bubbles)
+    text_data = text_extractor.extract_text(original_image, bubbles, source_lang)
     
     # Step 4: Translate text
     translated_data = translator.translate(text_data, source_lang, target_lang, manga_title=None)
