@@ -39,11 +39,15 @@ def process_endpoint():
               format: binary
     """
     files = request.files.getlist('image')
+    source_lang = request.form.get("source_lang", "ja")
+    target_lang = request.form.get("target_lang", "en")
+    print("source_lang" + source_lang)
+    print("target_lang" + target_lang)
     results = []
     for file in files:
         npimg = np.frombuffer(file.read(), np.uint8)
         image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-        result = asyncio.run(process_image(image))
+        result = asyncio.run(process_image(image, source_lang=source_lang, target_lang=target_lang))
         imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
         img_res = {
             "image": imageb64,

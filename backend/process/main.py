@@ -1,4 +1,4 @@
-# main.py 
+# main.py -- NOT USED RIGHT NOW -- use test.py instead
 
 # usage: python -m process.main --image_path <path_to_image>
 import argparse

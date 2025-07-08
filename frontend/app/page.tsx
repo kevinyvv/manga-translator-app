@@ -38,6 +38,9 @@ export default function Home() {
         formData.append("image", file)
       })
       
+      formData.append("source_lang", sourceLanguage);
+      formData.append("target_lang", targetLanguage);
+
       const apiUrl = API_URL
       const response = await fetch(`${apiUrl}/process`, {
         method: "POST",
