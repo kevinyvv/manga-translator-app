@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { DEFAULT_SOURCE_LANGUAGE, DEFAULT_TARGET_LANGUAGE, API_URL } from "@/constants";
 import { Header } from "@/components/header"
 import { UploadSection } from "@/components/upload-section"
 import { LanguageSelector } from "@/components/language-selector"
@@ -11,8 +12,8 @@ import Image from "next/image"
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [sourceLanguage, setSourceLanguage] = useState("ja")
-  const [targetLanguage, setTargetLanguage] = useState("en")
+  const [sourceLanguage, setSourceLanguage] = useState(DEFAULT_SOURCE_LANGUAGE)
+  const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANGUAGE)
   const [isProcessing, setIsProcessing] = useState(false)
   const [processingProgress, setProcessingProgress] = useState(0)
   const [results, setResults] = useState<any[]>([])
@@ -37,7 +38,7 @@ export default function Home() {
         formData.append("image", file)
       })
       
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const apiUrl = API_URL
       const response = await fetch(`${apiUrl}/process`, {
         method: "POST",
         body: formData,
