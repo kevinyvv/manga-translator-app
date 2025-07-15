@@ -55,18 +55,18 @@ class MangaTextRenderer:
         # Style configuration
         self.text_color = (0, 0, 0)  # Black text by default
         self.outline_color = None  # No outline by default
-        self.shadow_color = None  # No shadow by default
-        self.shadow_offset = 2
         self.outline_size = 1
     
     def _create_test_draw(self):
         """Create a draw object for text measurements"""
+        # 1 px transparent image for temp drawing context
         test_img = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
         return ImageDraw.Draw(test_img)
         
     def _get_text_size(self, text, font):
         """Get dimensions of text with given font"""
         draw = self._create_test_draw()
+        # measures w,h of text on test drawing context
         try:
             bbox = draw.textbbox((0, 0), text, font=font)
             return bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -156,15 +156,6 @@ class MangaTextRenderer:
         
         return best_font, best_lines, current_size
     
-    def set_text_style(self, text_color=(0, 0, 0), outline_color=None, 
-                      shadow_color=None, shadow_offset=2, outline_size=1):
-        """Set the text rendering style"""
-        self.text_color = text_color
-        self.outline_color = outline_color
-        self.shadow_color = shadow_color
-        self.shadow_offset = shadow_offset
-        self.outline_size = outline_size
-    
     def render_text(self, draw, text, box, font=None, align="center"):
         """Render text within a box with manga styling"""
         x, y, w, h = box
@@ -172,7 +163,6 @@ class MangaTextRenderer:
         # Auto-fit text if font not provided
         if font is None:
             font, wrapped_lines, _ = self.fit_text_in_box(text, w, h)
-            # self.logger.debug(f"Auto-fitted font size: {font.size} for box {box}")
         else:
             # Wrap text using provided font
             wrapped_lines = self.wrap_text(text, font, w * 0.9)
@@ -198,7 +188,6 @@ class MangaTextRenderer:
             else:  # left
                 text_x = x + 10
             
-            # self.logger.debug(f"Auto-fitted font size: {font.size}")
             self._draw_styled_text(draw, (text_x, text_y), line, font)
             text_y += line_height + line_spacing
             
@@ -207,11 +196,6 @@ class MangaTextRenderer:
     def _draw_styled_text(self, draw, position, text, font):
         """Draw text with the specified style (shadow, outline, etc.)"""
         x, y = position
-        
-        # Draw shadow if specified
-        if self.shadow_color:
-            shadow_pos = (x + self.shadow_offset, y + self.shadow_offset)
-            draw.text(shadow_pos, text, font=font, fill=self.shadow_color)
         
         # Draw outline if specified
         if self.outline_color:
@@ -224,41 +208,54 @@ class MangaTextRenderer:
         
         # Draw main text
         draw.text((x, y), text, font=font, fill=self.text_color)
-        
-    def analyze_bubble_style(self, image, box):
+
+    def set_text_style(self, font_path=None, text_color=(0, 0, 0), outline_color=None, 
+                      outline_size=1):
+        """Set the text rendering style"""
+        self.text_color = text_color
+        self.outline_color = outline_color
+        self.outline_size = outline_size
+        self.font_path = font_path
+
+    def analyze_bubble_style(self, image, box, text):
         """Analyze the speech bubble to determine optimal text style"""
         x, y, w, h = box
         region = image.crop((x, y, x+w, y+h))
         region_array = np.array(region)
         
-        # Convert to grayscale
+        # grayscale
         if len(region_array.shape) == 3:
             gray = cv2.cvtColor(region_array, cv2.COLOR_RGB2GRAY)
         else:
             gray = region_array
             
-        # Calculate average brightness
         avg_brightness = np.mean(gray)
         
-        # Determine text color based on background brightness
+        # determine text color based on background
         if avg_brightness < 128:
             # Dark background, use light text
             text_color = (255, 255, 255)
             outline_color = (0, 0, 0)
-            shadow_color = None  # No shadow on dark background
         else:
             # Light background, use dark text
             text_color = (0, 0, 0)
             outline_color = None
-            shadow_color = (150, 150, 150)
+        
+        # font determination
+        font_path = self.font_path
+        if "!!" in text or text.isupper():
+            font_path = "fonts/komika.hand-bold.ttf"
+        elif "..." in text:
+            font_path = "fonts/KOMIKAB_.ttf"
+        else:
+            font_path = "fonts/komika-hand.ttf"
             
         # Calculate style settings
         style = {
             "text_color": text_color,
             "outline_color": outline_color,
-            "shadow_color": shadow_color,
-            "shadow_offset": max(1, int(min(w, h) / 100)),  # Scale with bubble size
-            "outline_size": 1
+            "outline_size": 1,
+            "font_path": font_path
         }
         
         return style
@@ -281,7 +278,7 @@ class MangaTextRenderer:
             
             # Auto-detect style if requested
             if auto_style:
-                style = self.analyze_bubble_style(image, box)
+                style = self.analyze_bubble_style(image, box, text)
                 self.set_text_style(**style)
             
             # Render text into the bubble

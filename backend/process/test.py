@@ -80,7 +80,7 @@ async def process_image(
     translated_data = translator.translate(text_data, source_lang, target_lang, manga_title=None)
     
     # Step 5: Create inpainted image (text removed)
-    inpainted_image = inpainter.inpaint(original_image, text_mask, method="lama")
+    inpainted_image = inpainter.inpaint(original_image, text_mask, method="opencv")
     
     # Step 6: Add translated text to inpainted image
     # Convert to PIL for text rendering
