@@ -33,7 +33,7 @@ class Inpainter:
     """
     def __init__(self, mask_dilation_radius=3, lama_device='cpu'):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # self.logger.setLevel(logging.DEBUG)
         self.mask_dilation_radius = mask_dilation_radius
 
         # LaMa model setup
@@ -47,7 +47,7 @@ class Inpainter:
 
     def simple_inpaint(self, image, text_mask):
         self.logger.info("Starting simple inpainting process (OpenCV)")
-        print("starting simple inpainting process")
+        self.logger.debug("starting simple inpainting process")
         if len(text_mask.shape) == 3:
             text_mask = cv2.cvtColor(text_mask, cv2.COLOR_BGR2GRAY)
         text_mask = text_mask.astype(np.uint8)
@@ -55,7 +55,7 @@ class Inpainter:
 
     def lama_inpaint(self, image, text_mask):
         self.logger.info("Starting LaMa inpainting process")
-        print("starting LaMa inpainting process")
+        self.logger.debug("starting LaMa inpainting process")
         # LaMa expects RGB images and mask in [0,1]
         if image.shape[2] == 4:
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)

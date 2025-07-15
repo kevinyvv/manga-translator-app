@@ -16,6 +16,9 @@ def test():
     return jsonify(message=test_xd())
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 @test_bp.route('/process', methods=['POST'])
 def process_endpoint():
     """
@@ -41,8 +44,8 @@ def process_endpoint():
     files = request.files.getlist('image')
     source_lang = request.form.get("source_lang", "ja")
     target_lang = request.form.get("target_lang", "en")
-    print("source_lang" + source_lang)
-    print("target_lang" + target_lang)
+    logger.debug("target_lang: %s", target_lang)
+    
     results = []
     for file in files:
         npimg = np.frombuffer(file.read(), np.uint8)

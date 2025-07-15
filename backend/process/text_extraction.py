@@ -42,7 +42,7 @@ class MangaTextExtractor:
             mask_dilation_radius (int): Radius for mask dilation
         """
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # self.logger.setLevel(logging.DEBUG)
         # Load the YOLO model for bubble detection
         self.logger.info(f"Loading bubble detection model ")
         try:
@@ -54,14 +54,14 @@ class MangaTextExtractor:
             self.logger.info(f"Warning: Failed to load YOLO model: {e}")
             self.bubble_detection_model = None
 
-        print(f"Loading text segmenter model")
+        logger.debug(f"Loading text segmenter model")
         try:
             script_dir = os.path.dirname(os.path.abspath(__file__))
             model_path = os.path.join(script_dir, "..", "models", "comic-text-segmenter.pt")
             self.segmenter = YOLO(model_path)
             self.segmenter.to('cpu')  
         except Exception as e:
-            print(f"Warning: Failed to load text segmenter model: {e}")
+            self.logger.warning(f"Failed to load text segmenter model: {e}")
             self.segmenter = None
         # Configure OCR
         
@@ -152,7 +152,7 @@ class MangaTextExtractor:
         # fallback method, but won't work well
         else:
             # Fallback to basic contour detection
-            print("Using fallback contour detection method")
+            self.logger.debug("Using fallback contour detection method")
             
             # Convert to grayscale
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -192,7 +192,7 @@ class MangaTextExtractor:
                 
                 bubbles.append([x, y, w, h])
         
-        print(f"Detected {len(bubbles)} speech bubbles")
+        logger.debug(f"Detected {len(bubbles)} speech bubbles")
         return bubbles, image
 
     def segment_text(self, image: np.ndarray) -> np.ndarray: 
@@ -242,7 +242,7 @@ class MangaTextExtractor:
             y2 = min(img_h, y + h)
             
             if x2 <= x1 or y2 <= y1:  # Skip if ROI is invalid
-                print(f"Skipping invalid bubble ROI: {(x, y, w, h)}")
+                logger.debug(f"Skipping invalid bubble ROI: {(x, y, w, h)}")
                 continue
                 
             bubble_roi = image[y1:y2, x1:x2]
@@ -268,7 +268,7 @@ class MangaTextExtractor:
                 # Clean up the text (remove extra whitespace and newlines)
                 text = ' '.join(text.strip().split())
             except Exception as e:
-                print(f"OCR error for bubble {i+1}: {e}")
+                self.logger.warning(f"OCR error for bubble {i+1}: {e}")
                 text = ""
 
             # Add to results
@@ -278,7 +278,7 @@ class MangaTextExtractor:
                 "text": text
             })
             
-            print(f"Bubble {i+1}: '{text}'")
+            self.logger.debug(f"Bubble {i+1}: '{text}'")
         
         return text_results
  

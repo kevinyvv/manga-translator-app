@@ -33,7 +33,7 @@ class MangaTextRenderer:
     
     def __init__(self, font_path=None, default_font_size=24):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # self.logger.setLevel(logging.DEBUG)
         
         self.default_font_size = default_font_size
         self.min_font_size = 8
@@ -46,9 +46,9 @@ class MangaTextRenderer:
             else:
                 self.default_font = ImageFont.load_default()
                 self.font_path = None
-                print("Warning: Using default font as specified font was not found")
+                self.logger.warning("Using default font as specified font was not found")
         except Exception as e:
-            print(f"Font loading error: {e}")
+            self.logger.error(f"Font loading error: {e}")
             self.default_font = ImageFont.load_default()
             self.font_path = None
         

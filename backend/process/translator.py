@@ -26,7 +26,7 @@ class MangaTranslator:
             translator_method (str): Translation method ('google' or 'deepl')
         """
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
+        # self.logger.setLevel(logging.DEBUG)
         # Configure translation
         self.translator_method = translator_method
         self.translator = Translator()
