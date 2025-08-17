@@ -18,7 +18,7 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 jikan = Jikan()
 
 class MangaTranslator:
-    def __init__(self, translator_method="genai"):
+    def __init__(self, translator_method="google"):
         """
         Initialize the manga translator
         
@@ -46,7 +46,7 @@ class MangaTranslator:
         """
         return self.languages.get(lang_code, lang_code)
 
-    def translate(self, text_data, source_lang:str="ja", target_lang:str="en", manga_title:str=None) -> str:
+    async def translate(self, text_data, source_lang:str="ja", target_lang:str="en", manga_title:str=None) -> str:
         """
         Translate text using the configured translator method
         
@@ -54,7 +54,8 @@ class MangaTranslator:
             str: Translated text
         """
         if self.translator_method == "google":
-            return asyncio.run(self.translate_text(text_data, source_lang, target_lang))
+            translated_data = await self.translate_text(text_data, source_lang, target_lang)
+            return translated_data
         elif self.translator_method == "genai":
             return self.translate_text_genai(text_data, source_lang, target_lang, manga_title)
         else:

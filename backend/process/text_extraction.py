@@ -1,5 +1,6 @@
 # Standard library imports
 import os
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 import sys
 import json
 import time
@@ -10,17 +11,18 @@ import pdb
 import logging
 from loguru import logger
 
-# Third-party imports - Data processing & mathematical operations
 import numpy as np
 import torch
+from safetensors.torch import load_file
 from skimage.morphology import binary_dilation, square
 
-# Third-party imports - Image processing
 import cv2
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import matplotlib.pyplot as plt
 
 from googletrans import Translator
+# monkey patch for manga_ocr
+os.environ["MPS_DISABLED"] = "1"   # disable mps entirely
 from manga_ocr import MangaOcr
 from ultralytics import YOLO
 
@@ -43,23 +45,37 @@ class MangaTextExtractor:
         """
         self.logger = logging.getLogger(self.__class__.__name__)
         # self.logger.setLevel(logging.DEBUG)
-        # Load the YOLO model for bubble detection
-        self.logger.info(f"Loading bubble detection model ")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        models_dir = os.path.join(script_dir, "..", "models")
+
+        # bubble detection
         try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(script_dir, "..", "models", "detect_bubble.pt")
-            self.bubble_detection_model = YOLO(model_path)
-            self.bubble_detection_model.to('cpu')
+            self.logger.info("Loading bubble detection model")
+            bubble_prefix = os.path.join(models_dir, "detect_bubble")
+            bubble_yaml = bubble_prefix + ".yaml"
+            bubble_weights = bubble_prefix + ".safetensors"
+
+            # init YOLO model from YAML
+            self.bubble_detection_model = YOLO(bubble_yaml)
+
+            # load safetensors weights
+            bubble_state = load_file(bubble_weights)
+            self.bubble_detection_model.model.load_state_dict(bubble_state)
         except Exception as e:
-            self.logger.info(f"Warning: Failed to load YOLO model: {e}")
+            self.logger.warning(f"Failed to load bubble detection model: {e}")
             self.bubble_detection_model = None
 
-        logger.debug(f"Loading text segmenter model")
+        # text segmenter
         try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(script_dir, "..", "models", "comic-text-segmenter.pt")
-            self.segmenter = YOLO(model_path)
-            self.segmenter.to('cpu')  
+            self.logger.info("Loading text segmenter model")
+            seg_prefix = os.path.join(models_dir, "comic-text-segmenter")
+            seg_yaml = seg_prefix + ".yaml"
+            seg_weights = seg_prefix + ".safetensors"
+
+            self.segmenter = YOLO(seg_yaml)
+
+            seg_state = load_file(seg_weights)
+            self.segmenter.model.load_state_dict(seg_state)
         except Exception as e:
             self.logger.warning(f"Failed to load text segmenter model: {e}")
             self.segmenter = None
@@ -133,7 +149,7 @@ class MangaTextExtractor:
         # If bubble detection model is available, use it
         if self.bubble_detection_model:
 
-            results = self.bubble_detection_model(image, conf=conf_threshold)[0]
+            results = self.bubble_detection_model(image, conf=conf_threshold, device="cpu")[0]
             
             # Process detections
             bubbles = []
@@ -205,7 +221,7 @@ class MangaTextExtractor:
         Returns:
             numpy.ndarray: Binary mask of text areas
         """
-        results = self.segmenter(image)
+        results = self.segmenter(image, device="cpu")
         mask = results[0].masks.data.cpu().numpy()  # shape: (N, H_mask, W_mask)
 
         binary_mask = np.zeros_like(image[:, :, 0], dtype=np.uint8)

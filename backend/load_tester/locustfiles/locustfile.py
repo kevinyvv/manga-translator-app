@@ -28,7 +28,8 @@ class TranslationTasks(TaskSet):
             
         # 1-5 random images
         num_images = min(random.randint(1, 5), len(self.image_files))
-        selected_images = random.sample(self.image_files, num_images)
+        #selected_images = random.sample(self.image_files, num_images)
+        selected_images = self.image_files[0:3]
         
         try:
             files = []

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, send_file, jsonify
+from quart import Blueprint, request, send_file, jsonify
 import numpy as np
 import cv2
 import io
@@ -7,6 +7,19 @@ import base64
 
 from process.test import test_xd
 from process.test import process_image
+
+
+from process.text_extraction import MangaTextExtractor
+from process.translator import MangaTranslator
+from process.text_render import MangaTextRenderer
+from process.inpaint import Inpainter
+
+print("initializing components")
+text_extractor = MangaTextExtractor()
+translator = MangaTranslator()
+renderer = MangaTextRenderer(font_path="fonts/Anime.otf")
+inpainter = Inpainter()
+print("initialization complete")
 
 
 test_bp = Blueprint('test', __name__)
@@ -20,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 @test_bp.route('/process', methods=['POST'])
-def process_endpoint():
+async def process_endpoint():
     """
     Process an uploaded image and return the result.
     ---
@@ -41,16 +54,23 @@ def process_endpoint():
               type: string
               format: binary
     """
-    files = request.files.getlist('image')
-    source_lang = request.form.get("source_lang", "ja")
-    target_lang = request.form.get("target_lang", "en")
+    files = (await request.files).getlist('image')
+    form = await request.form
+    source_lang = form.get("source_lang", "ja")
+    target_lang = form.get("target_lang", "en")
     logger.debug("target_lang: %s", target_lang)
     
     results = []
     for file in files:
         npimg = np.frombuffer(file.read(), np.uint8)
         image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
-        result = asyncio.run(process_image(image, source_lang=source_lang, target_lang=target_lang))
+        result = await process_image(image, 
+                                           text_extractor=text_extractor,
+                                            translator=translator,
+                                            renderer=renderer,
+                                            inpainter=inpainter,
+                                           source_lang=source_lang, 
+                                           target_lang=target_lang)
         imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
         img_res = {
             "image": imageb64,

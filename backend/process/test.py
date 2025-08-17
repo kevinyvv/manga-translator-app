@@ -22,6 +22,10 @@ def test_xd():
 
 async def process_image(
     image: np.ndarray,
+    text_extractor,
+    translator,
+    renderer,
+    inpainter,
     source_lang="ja",
     target_lang="en",
     conf_threshold=0.25,
@@ -51,12 +55,6 @@ async def process_image(
     # Read original image
     original_image = image
 
-    # Initialize components
-    text_extractor = MangaTextExtractor()
-    translator = MangaTranslator()
-    renderer = MangaTextRenderer(font_path=font_path)
-    inpainter = Inpainter()
-
     # Step 1: Detect speech bubbles
     bubbles, _ = text_extractor.detect_bubbles(image, conf_threshold) # change to use image
     
@@ -77,7 +75,7 @@ async def process_image(
     text_data = text_extractor.extract_text(original_image, bubbles, source_lang=source_lang)
     
     # Step 4: Translate text
-    translated_data = translator.translate(text_data, source_lang, target_lang, manga_title=None)
+    translated_data = await translator.translate(text_data, source_lang, target_lang, manga_title=None)
     
     # Step 5: Create inpainted image (text removed)
     inpainted_image = inpainter.inpaint(original_image, text_mask, method="opencv")

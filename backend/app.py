@@ -1,7 +1,7 @@
 import logging
 import colorlog
-from flask import Flask
-from flask_cors import CORS
+from quart import Quart
+from quart_cors import cors
 from flasgger import Swagger
 
 # Set up colored logging for the whole app
@@ -24,8 +24,8 @@ logger.setLevel(logging.INFO)
 for noisy in ["werkzeug", "httpx", "google_genai"]:
     logging.getLogger(noisy).setLevel(logging.WARNING)
     
-app = Flask(__name__)
-CORS(app)
+app = Quart(__name__)
+app = cors(app, allow_origin="*")
 # swagger is at 127.0.0.1/apidocs/
 Swagger(app)
 
