@@ -1,8 +1,13 @@
-# Use an official Python base image (match your local version, e.g., 3.13 if that's what you use)
-FROM python:3.13-slim
+FROM python:3.13-slim-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
-ENV POETRY_VERSION=1.8.2 \
+ENV POETRY_VERSION=2.1.3 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     POETRY_VIRTUALENVS_CREATE=false
@@ -16,8 +21,14 @@ RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 # Copy only dependency files first for better caching
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies
-RUN poetry install --no-interaction --no-ansi --no-root
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
+RUN poetry install --no-interaction --no-ansi \
+    && poetry cache clear . --all -n 
+
+RUN pip uninstall -y torch torchvision torchaudio && \
+pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cpu
+
 
 # Copy the rest of the backend code
 COPY . .
