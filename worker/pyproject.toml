@@ -1,0 +1,57 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Kevin",email = "kevin31422005@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "flask (>=3.1.1,<4.0.0)",
+    "flask-cors (>=6.0.0,<7.0.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "numpy (>=2.3.0,<3.0.0)",
+    "torch (>=2.7.1,<3.0.0)",
+    "scikit-image (>=0.25.2,<0.26.0)",
+    "opencv-python (>=4.11.0.86,<5.0.0.0)",
+    "pillow (>=11.2.1,<12.0.0)",
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "googletrans (>=4.0.2,<5.0.0)",
+    "manga-ocr (>=0.1.14,<0.2.0)",
+    "ultralytics (>=8.3.151,<9.0.0)",
+    "google-genai (>=1.19.0,<2.0.0)",
+    "jikanpy (>=4.3.2,<5.0.0)",
+    "colorlog (>=6.9.0,<7.0.0)",
+    "pytesseract (>=0.3.13,<0.4.0)",
+    "asyncio (>=3.4.3,<4.0.0)",
+    "flasgger (>=0.9.7.1,<0.10.0.0)",
+    "safetensors (>=0.6.2,<0.7.0)",
+    "quart (>=0.20.0,<0.21.0)",
+    "quart-cors (>=0.8.0,<0.9.0)"
+]
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.13"
+# ... your other dependencies
+manga-ocr = "0.1.14"
+
+# Assign torch and related packages to your new source
+torch = { version = "2.7.1", source = "pytorch-cpu" }
+torchvision = { version = "0.22.1", source = "pytorch-cpu" }
+
+[tool.poetry.group.dev.dependencies]
+flask = "^3.1.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

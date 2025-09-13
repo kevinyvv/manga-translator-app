@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = "A Quart web server with a Redis job queue."
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+quart = "^0.19.4"
+quart-cors = "^0.8.0"
+flasgger = "^0.9.7.1"
+colorlog = "^6.8.2"
+redis = "^5.0.4"
+hypercorn = "^0.16.0" # Recommended for production
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

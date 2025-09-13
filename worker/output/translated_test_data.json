@@ -1,0 +1,57 @@
+[
+    {
+        "bubble_id": 1,
+        "bbox": [
+            434,
+            1027,
+            214,
+            285
+        ],
+        "text": "何故泳者の居場所がお分かりになるんですの？",
+        "translated_text": "How do you know the swimmers' location?\n"
+    },
+    {
+        "bubble_id": 2,
+        "bbox": [
+            417,
+            1604,
+            227,
+            293
+        ],
+        "text": "受給タイプには祝物覚醒タイブには呪印をそれぞれ厳したんだそれを辿るくらいのことはできるさ",
+        "translated_text": "I administered blessings to those with the Gift type and curses to those with the Cursed Awakening type. You should be able to trace them.\n"
+    },
+    {
+        "bubble_id": 3,
+        "bbox": [
+            631,
+            0,
+            121,
+            145
+        ],
+        "text": "ああ感情が乗ってないとはいえ",
+        "translated_text": "Ah, even though there's no emotion in it.\n"
+    },
+    {
+        "bubble_id": 4,
+        "bbox": [
+            510,
+            72,
+            143,
+            162
+        ],
+        "text": "たまに勿体無いと思うことはあるかもね",
+        "translated_text": "I might sometimes think it's a waste.\n"
+    },
+    {
+        "bubble_id": 5,
+        "bbox": [
+            335,
+            20,
+            106,
+            159
+        ],
+        "text": "ぐぐっ",
+        "translated_text": "Guh...\n"
+    }
+]

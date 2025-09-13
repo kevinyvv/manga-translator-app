@@ -3,6 +3,7 @@ import os
 import json
 import asyncio
 import cv2
+import base64
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt

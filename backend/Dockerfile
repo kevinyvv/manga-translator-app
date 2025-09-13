@@ -29,6 +29,7 @@ RUN poetry install --no-interaction --no-ansi \
 RUN pip uninstall -y torch torchvision torchaudio && \
 pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cpu
 
+RUN pip install redis
 
 # Copy the rest of the backend code
 COPY . .
@@ -37,4 +38,4 @@ COPY . .
 EXPOSE 5000
 
 # Set the entrypoint (adjust if your main file is not app.py)
-CMD ["python", "app.py"]
+CMD ["python", "worker.py"]
