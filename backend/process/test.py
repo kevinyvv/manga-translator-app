@@ -98,11 +98,13 @@ async def process_image(
     result_image = cv2.cvtColor(np.array(result_pil), cv2.COLOR_RGB2BGR)
     _, img_encoded = cv2.imencode('.png', result_image)
     img_bytes = img_encoded.tobytes()
+
+    encoded_image_str = base64.b64encode(img_bytes).decode('utf-8')
     
     return {
         "status": "success",
         "bubbles_count": len(bubbles),
         "text_extracted": sum(1 for item in text_data if item["text"]),
-        "image_bytes": img_bytes,
+        "image_bytes": encoded_image_str,
         "translated_data": translated_data
     }

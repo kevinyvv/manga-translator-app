@@ -26,28 +26,11 @@ dependencies = [
     "colorlog (>=6.9.0,<7.0.0)",
     "pytesseract (>=0.3.13,<0.4.0)",
     "asyncio (>=3.4.3,<4.0.0)",
-    "flasgger (>=0.9.7.1,<0.10.0.0)",
-    "safetensors (>=0.6.2,<0.7.0)",
-    "quart (>=0.20.0,<0.21.0)",
-    "quart-cors (>=0.8.0,<0.9.0)"
+    "flasgger (>=0.9.7.1,<0.10.0.0)"
 ]
-
-[[tool.poetry.source]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-priority = "explicit"
 
 [tool.poetry]
 package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.13"
-# ... your other dependencies
-manga-ocr = "0.1.14"
-
-# Assign torch and related packages to your new source
-torch = { version = "2.7.1", source = "pytorch-cpu" }
-torchvision = { version = "0.22.1", source = "pytorch-cpu" }
 
 [tool.poetry.group.dev.dependencies]
 flask = "^3.1.1"

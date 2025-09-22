@@ -45,11 +45,54 @@ async def process_endpoint():
         "message": f"Translation job has been queued for {len(jobs)} image(s)."
     }), 202
 
+# Async Redis client
+# redis_client = aioredis.from_url("redis://localhost:6379", decode_responses=True)
+
+# @test_bp.route("/process", methods=["POST"])
+# async def process_endpoint():
+#     files = (await request.files).getlist("image")
+#     if not files:
+#         return jsonify({"error": "No image file provided"}), 400
+
+#     form = await request.form
+#     source_lang = form.get("source_lang", "ja")
+#     target_lang = form.get("target_lang", "en")
+
+#     jobs = []
+#     for file in files:
+#         job_id = str(uuid.uuid4())
+
+#         job = {
+#             "job_id": job_id,
+#             "filename": file.filename,
+#             "source_lang": source_lang,
+#             "target_lang": target_lang,
+#         }
+#         job_json = json.dumps(job)
+
+#         # Async LPUSH 
+#         await redis_client.lpush("job_queue", job_json)
+
+#         jobs.append(job_id)
+
+#     logger.info(f"Queued {len(jobs)} translation job(s).")
+#     return (
+#         jsonify(
+#             {
+#                 "status": "accepted",
+#                 "job_ids": jobs,
+#                 "message": f"Queued {len(jobs)} image(s) (non-blocking test).",
+#             }
+#         ),
+#         202,
+#     )
+
 @test_bp.route('/result/<job_id>', methods=['GET'])
 async def get_result(job_id):
     result_json = redis_client.get(f"job_result:{job_id}")
     if not result_json:
         return jsonify({"status": "pending", "message": "Result not ready"}), 202
     result = json.loads(result_json)
+    
     logger.info("Completed Job")
     return jsonify({"status": "done", "result": result}), 200

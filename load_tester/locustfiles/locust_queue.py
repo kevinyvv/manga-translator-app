@@ -61,12 +61,12 @@ class QueueTranslationTasks(TaskSet):
                 if not job_ids:
                     response.failure("No job IDs returned")
                     return
-
+                
             # Step 2: Poll each job until complete
             for job_id in job_ids:
                 done = False
                 retries = 0
-                while not done and retries < 10:
+                while not done and retries < 25:
                     with self.client.get(f"/result/{job_id}",
                                          catch_response=True) as result_resp:
                         if result_resp.status_code == 200:
@@ -96,7 +96,7 @@ class QueueTranslationTasks(TaskSet):
 
 class MangaTranslatorQueueUser(HttpUser):
     tasks = [QueueTranslationTasks]
-    wait_time = between(1, 5)
+    wait_time = between(1000000, float('inf'))
     host = "http://34.110.146.65"
 
     def on_start(self):

@@ -30,7 +30,7 @@ app = cors(app, allow_origin="*")
 Swagger(app)
 
 # Register blueprints
-from routes.test import test_bp
+from routes.main import test_bp # TODO: make this support calling from anywhere
 app.register_blueprint(test_bp, url_prefix='')
 
 

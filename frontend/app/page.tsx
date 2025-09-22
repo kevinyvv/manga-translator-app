@@ -24,6 +24,38 @@ export default function Home() {
     setUploadedFiles(files)
     setResults([])
   }
+  const pollForResult = async (jobId: string) => {
+    const maxAttempts = 6
+    const interval = 10000 // 10 seconds
+    let attempt = 0
+
+    return new Promise<any>((resolve, reject) => {
+      const checkResult = async () => {
+        try {
+          const res = await fetch(`${API_URL}/result/${jobId}`)
+          if (!res.ok) throw new Error("Failed to fetch result")
+          const data = await res.json()
+
+          if (data.status === "done") {
+            resolve(data.result)
+            return
+          }
+
+          attempt++
+          if (attempt >= maxAttempts) {
+            reject(new Error("Result not ready after multiple attempts"))
+            return
+          }
+
+          setTimeout(checkResult, interval)
+        } catch (err) {
+          reject(err)
+        }
+      }
+
+      checkResult()
+    })
+  }
 
 
   const handleTranslate = async () => {
@@ -34,48 +66,44 @@ export default function Home() {
 
     try {
       const formData = new FormData()
-      uploadedFiles.forEach((file) => {
-        formData.append("image", file)
-      })
-      
-      formData.append("source_lang", sourceLanguage);
-      formData.append("target_lang", targetLanguage);
+      uploadedFiles.forEach((file) => formData.append("image", file))
+      formData.append("source_lang", sourceLanguage)
+      formData.append("target_lang", targetLanguage)
 
-      const apiUrl = API_URL
-      const response = await fetch(`${apiUrl}/process`, {
+      const response = await fetch(`${API_URL}/process`, {
         method: "POST",
         body: formData,
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        // Convert base64 image to data URL for <img> tag
-        const imageUrl = `data:image/png;base64,${data.image}`
+      if (!response.ok) throw new Error("Failed to start job")
+      const { job_ids } = await response.json()
+      console.log("Job IDs:", job_ids)
 
-         setProcessingProgress(100)
-          setIsProcessing(false)
+      const resultsData = await Promise.all(
+        job_ids.map(async (jobId: string) => {
+          const result = await pollForResult(jobId)
+          return result 
+        })
+      )
 
-          const resultsArray = data.map((item: any, idx: number) => ({
-            id: idx,
-            originalFile: uploadedFiles[idx],
-            originalUrl: URL.createObjectURL(uploadedFiles[idx]),
-            translatedUrl: `data:image/png;base64,${item.image}`,
-            detectedText: item.translated_data?.map((t: any) => t.text) || ["No text detected"],
-            translatedText: item.translated_data?.map((t: any) => t.translated_text) || ["No text translated"],
-          }))
+      const resultsArray = resultsData.map((item: any, idx: number) => ({
+        id: idx,
+        originalFile: uploadedFiles[idx],
+        originalUrl: URL.createObjectURL(uploadedFiles[idx]),
+        translatedUrl: `data:image/png;base64,${item.image_bytes}`,
+        detectedText: item.translated_data?.map((t: any) => t.text) || ["No text detected"],
+        translatedText: item.translated_data?.map((t: any) => t.translated_text) || ["No text translated"],
+      }))
 
-          setResults(resultsArray)
-      } else {
-        setIsProcessing(false)
-        setProcessingProgress(0)
-      }
+      setProcessingProgress(100)
+      setResults(resultsArray)
     } catch (error) {
       console.error("Error translating images:", error)
-      setIsProcessing(false)
       setProcessingProgress(0)
+    } finally {
+      setIsProcessing(false)
     }
   }
-
 
 
   // useEffect(() => {
