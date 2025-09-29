@@ -23,7 +23,7 @@ class MangaTranslator:
         Initialize the manga translator
         
         Args:
-            translator_method (str): Translation method ('google' or 'deepl')
+            translator_method (str): Translation method 'google' or 'genai'
         """
         self.logger = logging.getLogger(self.__class__.__name__)
         # self.logger.setLevel(logging.DEBUG)

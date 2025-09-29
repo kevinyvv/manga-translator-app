@@ -71,9 +71,11 @@ async def process_endpoint():
                                             inpainter=inpainter,
                                            source_lang=source_lang, 
                                            target_lang=target_lang)
-        imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
+        # imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
+        image_bytes = result["image_bytes"]
+
         img_res = {
-            "image": imageb64,
+            "image": image_bytes,
             "text_extracted": result["text_extracted"],
             "translated_data": result["translated_data"]
         }
