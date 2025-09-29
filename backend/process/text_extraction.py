@@ -52,15 +52,16 @@ class MangaTextExtractor:
         try:
             self.logger.info("Loading bubble detection model")
             bubble_prefix = os.path.join(models_dir, "detect_bubble")
-            bubble_yaml = bubble_prefix + ".yaml"
-            bubble_weights = bubble_prefix + ".safetensors"
+            # bubble_yaml = bubble_prefix + ".yaml"
+            # bubble_weights = bubble_prefix + ".safetensors"
+            bubble_model = bubble_prefix + ".pt"
 
             # init YOLO model from YAML
-            self.bubble_detection_model = YOLO(bubble_yaml)
+            self.bubble_detection_model = YOLO(bubble_model)
 
             # load safetensors weights
-            bubble_state = load_file(bubble_weights)
-            self.bubble_detection_model.model.load_state_dict(bubble_state)
+            # bubble_state = load_file(bubble_weights)
+            # self.bubble_detection_model.model.load_state_dict(bubble_state)
         except Exception as e:
             self.logger.warning(f"Failed to load bubble detection model: {e}")
             self.bubble_detection_model = None
@@ -69,13 +70,14 @@ class MangaTextExtractor:
         try:
             self.logger.info("Loading text segmenter model")
             seg_prefix = os.path.join(models_dir, "comic-text-segmenter")
-            seg_yaml = seg_prefix + ".yaml"
-            seg_weights = seg_prefix + ".safetensors"
+            # seg_yaml = seg_prefix + ".yaml"
+            # seg_weights = seg_prefix + ".safetensors"
+            seg_model = seg_prefix + ".pt"
 
-            self.segmenter = YOLO(seg_yaml)
+            self.segmenter = YOLO(seg_model)  # load model from .pt directly
 
-            seg_state = load_file(seg_weights)
-            self.segmenter.model.load_state_dict(seg_state)
+            # seg_state = load_file(seg_weights)
+            # self.segmenter.model.load_state_dict(seg_state)
         except Exception as e:
             self.logger.warning(f"Failed to load text segmenter model: {e}")
             self.segmenter = None
