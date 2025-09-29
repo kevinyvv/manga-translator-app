@@ -1,3 +1,1 @@
-backend/models/detect_bubble.pt filter=lfs diff=lfs merge=lfs -text
-backend/models/comic-text-segmenter.pt filter=lfs diff=lfs merge=lfs -text
-backend/models/anime-manga-big-lama.pt filter=lfs diff=lfs merge=lfs -text
+backend/models/*.pt filter=lfs diff=lfs merge=lfs -text
