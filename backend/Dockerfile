@@ -25,4 +25,4 @@ COPY . .
 EXPOSE 5000
 
 # Set the entrypoint (adjust if your main file is not app.py)
-CMD ["python", "app.py"]
+CMD ["poetry", "run", "python3", "app.py"]
