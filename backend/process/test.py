@@ -59,14 +59,17 @@ async def process_image(
     # Step 1: Detect speech bubbles
     bubbles, _ = text_extractor.detect_bubbles(image, conf_threshold) # change to use image
     
+    _, img_encoded = cv2.imencode('.png', original_image)
+    encoded_image_str = base64.b64encode(img_encoded.tobytes()).decode('utf-8')
+
     # Skip processing if no bubbles found
     if not bubbles:
          return {
-        "status": "success",
+        "status": "skipped",
         "bubbles_count": len(bubbles),
-        "text_extracted": sum(1 for item in text_data if item["text"]),
-        "image_bytes": image.tobytes(),
-        "translated_data": translated_data
+        "text_extracted": 0,
+        "image_bytes": encoded_image_str,
+        "translated_data": []
         }
 
     # Step 2: Generate text mask using text segmentation
@@ -100,7 +103,7 @@ async def process_image(
     img_bytes = img_encoded.tobytes()
 
     encoded_image_str = base64.b64encode(img_bytes).decode('utf-8')
-    
+
     return {
         "status": "success",
         "bubbles_count": len(bubbles),
