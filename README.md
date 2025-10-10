@@ -2,9 +2,11 @@
 
 This application allows you to translate manga from one language to another.
 
-## Example 
+## Process Example
 
 ![process](https://github.com/user-attachments/assets/e12c023b-9fc9-43ab-a006-49da8df8ca1f)
+
+The site looks much nicer than this debug output :)
 
 ## Running the application
 
