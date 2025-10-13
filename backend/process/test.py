@@ -29,6 +29,8 @@ async def process_image(
     inpainter,
     source_lang="ja",
     target_lang="en",
+    translation_method="genai",
+    inpaint_method="opencv",
     conf_threshold=0.25,
     debug=False,
     font_path="fonts/Anime.otf"
@@ -79,10 +81,10 @@ async def process_image(
     text_data = text_extractor.extract_text(original_image, bubbles, source_lang=source_lang)
     
     # Step 4: Translate text
-    translated_data = await translator.translate(text_data, source_lang, target_lang, manga_title=None)
+    translated_data = await translator.translate(text_data, source_lang, target_lang, translation_method=translation_method, manga_title=None)
     
     # Step 5: Create inpainted image (text removed)
-    inpainted_image = inpainter.inpaint(original_image, text_mask, method="opencv")
+    inpainted_image = inpainter.inpaint(original_image, text_mask, method=inpaint_method)
     
     # Step 6: Add translated text to inpainted image
     # Convert to PIL for text rendering

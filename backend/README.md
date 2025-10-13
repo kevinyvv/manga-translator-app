@@ -31,15 +31,15 @@ This backend provides a simple Flask API for your project. It uses [Poetry](http
 4. **Run the Flask app:**
 
    ```sh
-   poetry run python app.py
+   poetry run python3 app.py
    ```
 
-   The API will be available at [http://127.0.0.1:5000/api/hello](http://127.0.0.1:5000/api/hello).
+   The API will be available at [http://0.0.0.0:5000/api/hello](http://0.0.0.0:5000/api/hello).
 
 ## API Example
 
 - **GET** `/api/hello`  
-  Returns:  
+  Returns:
   ```json
   { "message": "Hello from Flask!" }
   ```
@@ -47,7 +47,7 @@ This backend provides a simple Flask API for your project. It uses [Poetry](http
 ## Development Notes
 
 - Dependencies are managed in `pyproject.toml`.
-- To add a new dependency, use:  
+- To add a new dependency, use:
   ```sh
   poetry add <package-name>
   ```

@@ -18,17 +18,12 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 jikan = Jikan()
 
 class MangaTranslator:
-    def __init__(self, translator_method="google"):
+    def __init__(self):
         """
         Initialize the manga translator
-        
-        Args:
-            translator_method (str): Translation method 'google' or 'genai'
         """
         self.logger = logging.getLogger(self.__class__.__name__)
         # self.logger.setLevel(logging.DEBUG)
-        # Configure translation
-        self.translator_method = translator_method
         self.translator = Translator()
 
         with open("utils/languages.json", "r") as f:
@@ -46,20 +41,20 @@ class MangaTranslator:
         """
         return self.languages.get(lang_code, lang_code)
 
-    async def translate(self, text_data, source_lang:str="ja", target_lang:str="en", manga_title:str=None) -> str:
+    async def translate(self, text_data, source_lang:str="ja", target_lang:str="en", translation_method="genai", manga_title:str=None) -> str:
         """
         Translate text using the configured translator method
         
         Returns:
             str: Translated text
         """
-        if self.translator_method == "google":
+        if translation_method == "google":
             translated_data = await self.translate_text(text_data, source_lang, target_lang)
             return translated_data
-        elif self.translator_method == "genai":
+        elif translation_method == "genai":
             return self.translate_text_genai(text_data, source_lang, target_lang, manga_title)
         else:
-            raise ValueError(f"Unsupported translator method: {self.translator_method}")
+            raise ValueError(f"Unsupported translator method: {translation_method}")
         
     
     def translate_text_genai(self, text_data, source_lang:str="ja", target_lang:str="en", manga_title:str=None) -> list:
@@ -74,7 +69,7 @@ class MangaTranslator:
         Returns:
             list: Updated text_data with translations added
         """
-        self.logger.debug(f"Translating from {source_lang} to {target_lang} using {self.translator_method}")
+        self.logger.debug(f"Translating from {source_lang} to {target_lang} using genai")
         
         manga_info = ""
 
@@ -142,7 +137,7 @@ class MangaTranslator:
         Returns:
             list: Updated text_data with translations added
         """
-        self.logger.debug(f"Translating from {source_lang} to {target_lang} using {self.translator_method}")
+        self.logger.debug(f"Translating from {source_lang} to {target_lang} using google translate")
         
         for item in text_data:
             original_text = item["text"]

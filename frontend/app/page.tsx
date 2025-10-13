@@ -13,6 +13,17 @@ import { ProcessingStatus } from "@/components/processing-status";
 import { ResultsDisplay } from "@/components/results-display";
 import { Background } from "@/components/background";
 import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -21,6 +32,9 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [results, setResults] = useState<any[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [translationMethod, setTranslationMethod] = useState<string>("genai"); // "google" | "genai"
+  const [inpaintMethod, setInpaintMethod] = useState<string>("opencv"); // "opencv" | "lama"
 
   const settingsRef = useRef<HTMLDivElement>(null);
 
@@ -122,6 +136,9 @@ export default function Home() {
 
       formData.append("source_lang", sourceLanguage);
       formData.append("target_lang", targetLanguage);
+      // Inject settings
+      formData.append("translation_method", translationMethod); // "google" | "genai"
+      formData.append("inpaint_method", inpaintMethod); // "opencv" | "lama"
 
       const apiUrl = API_URL;
       const response = await fetch(`${apiUrl}/process`, {
@@ -168,10 +185,26 @@ export default function Home() {
     }
   }, [uploadedFiles]);
 
+  // Persist and hydrate settings from localStorage
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem("translation_method");
+      const i = localStorage.getItem("inpaint_method");
+      if (t === "google" || t === "genai") setTranslationMethod(t);
+      if (i === "opencv" || i === "lama") setInpaintMethod(i);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem("translation_method", translationMethod);
+      localStorage.setItem("inpaint_method", inpaintMethod);
+    } catch {}
+  }, [translationMethod, inpaintMethod]);
+
   return (
     <div className="min-h-screen relative">
       <Background />
-      <Header />
+      <Header onOpenSettings={() => setSettingsOpen(true)} />
 
       <main className="container mx-auto px-4 py-64 relative z-10">
         {/* Hero Section */}
@@ -220,6 +253,63 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      {/* Settings Modal */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+            <DialogDescription>
+              Choose translation and inpainting methods for processing.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Translation method</h4>
+              <RadioGroup
+                value={translationMethod}
+                onValueChange={setTranslationMethod}
+                className="grid gap-3"
+              >
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem id="tm-google" value="google" />
+                  <Label htmlFor="tm-google">Google Translate</Label>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem id="tm-genai" value="genai" />
+                  <Label htmlFor="tm-genai">LLM</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium mb-2">Inpaint method</h4>
+              <RadioGroup
+                value={inpaintMethod}
+                onValueChange={setInpaintMethod}
+                className="grid gap-3"
+              >
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem id="im-opencv" value="opencv" />
+                  <Label htmlFor="im-opencv">OpenCV</Label>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem id="im-lama" value="lama" />
+                  <Label htmlFor="im-lama">LaMa</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setSettingsOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setSettingsOpen(false)}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -14,7 +14,11 @@ This application allows you to translate manga from one language to another.
     ```bash
     poetry install
     ```
-3.  Run the Flask application:
+3.  Create .env and add necessary environment variables:
+    ```
+    GEMINI_API_KEY=<Gemini Key Here>
+    ```
+4.  Run the Flask application:
     ```bash
     poetry run python app.py
     ```

@@ -55,7 +55,6 @@ class Inpainter:
 
     def lama_inpaint(self, image, text_mask):
         self.logger.info("Starting LaMa inpainting process")
-        self.logger.debug("starting LaMa inpainting process")
         # LaMa expects RGB images and mask in [0,1]
         if image.shape[2] == 4:
             image = cv2.cvtColor(image, cv2.COLOR_BGRA2RGB)

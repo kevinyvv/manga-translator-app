@@ -58,6 +58,8 @@ async def process_endpoint():
     form = await request.form
     source_lang = form.get("source_lang", "ja")
     target_lang = form.get("target_lang", "en")
+    translation_method = form.get("translation_method", "genai")
+    inpaint_method = form.get("inpaint_method", "opencv")
     logger.debug("target_lang: %s", target_lang)
     
     results = []
@@ -70,7 +72,10 @@ async def process_endpoint():
                                             renderer=renderer,
                                             inpainter=inpainter,
                                            source_lang=source_lang, 
-                                           target_lang=target_lang)
+                                           target_lang=target_lang,
+                                           translation_method=translation_method,
+                                           inpaint_method=inpaint_method
+                                           )
         # imageb64 = base64.b64encode(result["image_bytes"]).decode('utf-8')
         image_bytes = result["image_bytes"]
 
