@@ -4,23 +4,18 @@ import json
 import base64
 import logging
 
-# Import the shared Redis client
 from shared.redis_client import redis_client
 import asyncio
 
 from dotenv import load_dotenv
 load_dotenv()
 
-# All heavy imports and initializations are now isolated to the worker.
 from process.text_extraction import MangaTextExtractor
 from process.translator import MangaTranslator
 from process.text_render import MangaTextRenderer
 from process.inpaint import Inpainter
-from process.test import process_image # Assuming process_image is in this file
+from process.test import process_image
 
-
-# Set up logging for the worker
-# (You can reuse your colorlog setup here if you make it a shared utility)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
 logger = logging.getLogger(__name__)
 

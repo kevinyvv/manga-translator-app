@@ -81,7 +81,6 @@ class MangaTextExtractor:
         except Exception as e:
             self.logger.warning(f"Failed to load text segmenter model: {e}")
             self.segmenter = None
-        # Configure OCR
         
         # supress the logs from mangaocr
         logging.getLogger("transformers").setLevel(logging.ERROR)
@@ -249,27 +248,23 @@ class MangaTextExtractor:
         """
         text_results = []
         
-        # Process each bubble
         for i, (x, y, w, h) in enumerate(bubbles):
-            # Extract ROI (Region of Interest)
-            # Ensure coordinates are within image bounds
+            # extract ROI (Region of Interest)
             img_h, img_w = image.shape[:2]
             x1 = max(0, x)
             y1 = max(0, y)
             x2 = min(img_w, x + w)
             y2 = min(img_h, y + h)
             
-            if x2 <= x1 or y2 <= y1:  # Skip if ROI is invalid
+            if x2 <= x1 or y2 <= y1:
                 logger.debug(f"Skipping invalid bubble ROI: {(x, y, w, h)}")
                 continue
                 
             bubble_roi = image[y1:y2, x1:x2]
             
-            # Convert ROI to grayscale
             gray_roi = cv2.cvtColor(bubble_roi, cv2.COLOR_BGR2GRAY)
             
-            # Apply additional preprocessing for better OCR
-            # Increase contrast
+            # apply additional preprocessing for better OCR
             _, binary_roi = cv2.threshold(gray_roi, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
             
             # Apply slight blur to reduce noise
@@ -283,13 +278,12 @@ class MangaTextExtractor:
                 else:
                     # for non-japanese languages use a different ocr model (gemini right now)
                     text = self.google_ocr(img, source_lang)
-                # Clean up the text (remove extra whitespace and newlines)
+                # remove extra whitespace and newlines
                 text = ' '.join(text.strip().split())
             except Exception as e:
                 self.logger.warning(f"OCR error for bubble {i+1}: {e}")
                 text = ""
 
-            # Add to results
             text_results.append({
                 "bubble_id": i + 1,
                 "bbox": [x, y, w, h],

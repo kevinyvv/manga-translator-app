@@ -5,8 +5,8 @@ import io
 import asyncio
 import base64
 
-from process.test import test_xd
-from process.test import process_image
+from process.main import test_xd
+from process.main import process_image
 
 
 from process.text_extraction import MangaTextExtractor
@@ -22,9 +22,9 @@ inpainter = Inpainter()
 print("initialization complete")
 
 
-test_bp = Blueprint('test', __name__)
+api_bp = Blueprint('test', __name__)
 
-@test_bp.route('/test')
+@api_bp.route('/test')
 def test():
     return jsonify(message=test_xd())
 
@@ -32,7 +32,7 @@ def test():
 import logging
 logger = logging.getLogger(__name__)
 
-@test_bp.route('/process', methods=['POST'])
+@api_bp.route('/process', methods=['POST'])
 async def process_endpoint():
     """
     Process an uploaded image and return the result.
